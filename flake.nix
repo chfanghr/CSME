@@ -1,5 +1,5 @@
 {
-  description = "Intel CSME System Tools v16 wrappers";
+  description = "Intel CSME System Tools v16 binaries";
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -18,15 +18,7 @@
         system,
         ...
       }: let
-        pkgs = import inputs.nixpkgs {
-          inherit system;
-          config.allowUnfreePredicate = pkg:
-            builtins.elem (inputs.nixpkgs.lib.getName pkg) [
-              "steam"
-              "steam-run"
-              "steam-unwrapped"
-            ];
-        };
+        pkgs = import inputs.nixpkgs {inherit system;};
 
         lib = pkgs.lib;
         csmeV16Dir = "CSME System Tools v16.0 r8";
@@ -58,10 +50,6 @@
             description = "Intel manifest extension utility";
             sourcePath = "Manifest Extension Utility/LINUX64/meu";
           };
-          mfit = {
-            description = "Intel modular flash image tool";
-            sourcePath = "Modular Flash Image Tool/LINUX64/mfit";
-          };
         };
 
         package = pkgs.stdenvNoCC.mkDerivation {
@@ -70,15 +58,16 @@
           src = csmeV16Src;
 
           dontUnpack = true;
-          nativeBuildInputs = [pkgs.makeWrapper];
+          nativeBuildInputs = [pkgs.autoPatchelfHook];
+          buildInputs = [
+            pkgs.glibc
+            pkgs.stdenv.cc.cc.lib
+            pkgs.zlib
+          ];
 
           installPhase = let
-            mkInstall = command: tool: let
-              unwrapped = "${command}-unwrapped";
-            in ''
-              install -Dm755 "$src/${csmeV16Root}/${tool.sourcePath}" "$out/bin/${unwrapped}"
-              makeWrapper ${pkgs.steam-run}/bin/steam-run "$out/bin/${command}" \
-                --add-flags "$out/bin/${unwrapped}"
+            mkInstall = command: tool: ''
+              install -Dm755 "$src/${csmeV16Root}/${tool.sourcePath}" "$out/bin/${command}"
             '';
           in ''
             runHook preInstall
@@ -94,7 +83,7 @@
           '';
 
           meta = {
-            description = "Wrapped Intel CSME System Tools v16 Linux64 binaries";
+            description = "Intel CSME System Tools v16 Linux64 binaries";
             homepage = "https://github.com/CE1CECL/IntelCSTools";
             platforms = ["x86_64-linux"];
             sourceProvenance = with lib.sourceTypes; [binaryNativeCode];

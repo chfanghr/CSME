@@ -1,5 +1,15 @@
 Run Intel's CSME tools on NixOS.
 
+Currently packaged tools:
+
+- `fpt`
+- `fwupdlcl`
+- `meinfo`
+- `memanuf`
+- `meu`
+
+`mfit` is intentionally not packaged right now. Its upstream Linux binary is a self-extracting bundled executable, and patching it with `autoPatchelfHook` breaks its embedded archive layout.
+
 
 ```
 CWWK-Q670M-ME ツ sudo nix run github:chfanghr/CSME\#fwupdlcl -- -FWVER

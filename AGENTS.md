@@ -4,8 +4,9 @@
 
 - The flake packages Intel CSME System Tools v16 Linux binaries from the upstream release zip, not from the upstream Git repo.
 - Supported system is only `x86_64-linux`.
-- Exposed apps and wrapped binaries are `fpt`, `fwupdlcl`, `meinfo`, `memanuf`, `meu`, and `mfit`.
-- Wrappers run through `steam-run`, so unfree nixpkgs config is required inside the flake for `steam`, `steam-run`, and `steam-unwrapped`.
+- Exposed apps and binaries are `fpt`, `fwupdlcl`, `meinfo`, `memanuf`, and `meu`.
+- Binaries should be patched with `autoPatchelfHook`; no `steam-run` wrapper or unfree Steam inputs are needed.
+- `mfit` is intentionally excluded for now. It is a self-extracting bundled executable, and `autoPatchelfHook` rewrites it in a way that breaks its embedded archive offsets.
 
 ## Important Layout Assumption
 
