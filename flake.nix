@@ -73,15 +73,17 @@
           nativeBuildInputs = [pkgs.makeWrapper];
 
           installPhase = let
-            mkInstall = command: tool: ''
-              install -Dm755 "$src/${csmeV16Root}/${tool.sourcePath}" "$out/share/intel-cs-tools/${command}"
+            mkInstall = command: tool: let
+              unwrapped = "${command}-unwrapped";
+            in ''
+              install -Dm755 "$src/${csmeV16Root}/${tool.sourcePath}" "$out/bin/${unwrapped}"
               makeWrapper ${pkgs.steam-run}/bin/steam-run "$out/bin/${command}" \
-                --add-flags "$out/share/intel-cs-tools/${command}"
+                --add-flags "$out/bin/${unwrapped}"
             '';
           in ''
             runHook preInstall
 
-            mkdir -p "$out/bin" "$out/share/intel-cs-tools"
+            mkdir -p "$out/bin"
 
             [ -d "$src/${csmeV16Dir}" ]
             [ -d "$src/${csmeV16Root}" ]
