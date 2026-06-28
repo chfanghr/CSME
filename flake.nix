@@ -121,10 +121,9 @@
           })
           tools;
 
-        devShells.default = pkgs.mkShell {
-          inputsFrom = [config.pre-commit.devShell];
-          packages = [package];
-        };
+        devShells.default = config.pre-commit.devShell.overrideAttrs (old: {
+          buildInputs = (old.buildInputs or []) ++ [package];
+        });
       };
     };
 }
